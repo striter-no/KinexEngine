@@ -1,0 +1,73 @@
+#pragma once
+#include <Kinex/init.hpp>
+#include <Kinex/internal.hpp>
+
+namespace knx{
+    class PhysicsScene{
+        map<string, irl::RigidBody*> rigidBodys;
+        bool state = false;
+
+        irl::PhysicsEnviroment enviroment;
+
+        public:
+
+        const bool &getState(){return state; }
+        void enable(){state = true;}
+        void diable(){state = false;}
+
+        void deleteRigidBody(string name){
+            rigidBodys.erase(name);
+        }
+
+        void addRigidBody(string name, irl::RigidBody *rigidBody){
+            rigidBodys[name] = rigidBody;
+        }
+
+        irl::Collision isRigidBodyCollided(string name, string name2){
+            return rigidBodys[name]->processCollision(*rigidBodys[name2]);
+        }
+
+        irl::Collision isRigidBodyCollided(string name){
+            vector<irl::Collision> out;
+            for(auto &pr: rigidBodys){ irl::RigidBody *rb = pr.second;
+                rb->update(enviroment);
+                for(auto &pr2: rigidBodys){ 
+                    if(pr.first == pr2.first) continue;
+                    auto info = rb->processCollision(*pr2.second);
+                    if(info.getCollidedStatus()) return {info};
+                }
+            }
+
+            return irl::Collision::NOT_COLLIDED() ;
+        }
+
+        vector<irl::Collision> getAllCollisionWithRigidBody(string name){
+            vector<irl::Collision> out;
+            for(auto &pr: rigidBodys){ irl::RigidBody *rb = pr.second;
+                rb->update(enviroment);
+                for(auto &pr2: rigidBodys){ 
+                    if(pr.first == pr2.first) continue;
+                    auto info = rb->processCollision(*pr2.second);
+                    if(info.getCollidedStatus()) out.push_back(info);
+                }
+            }
+            return {out};
+        }
+
+        void update(){
+            if(!state) return;
+
+            for(auto &pr: rigidBodys){ irl::RigidBody *rb = pr.second;
+                rb->update(enviroment);
+                for(auto &pr2: rigidBodys){ 
+                    if(pr.first == pr2.first) continue;
+                    irl::Collision collision = rb->processCollision(*pr2.second);
+                }
+            }
+        }
+
+        PhysicsScene(irl::PhysicsEnviroment enviroment, bool state): enviroment(enviroment), state(state) {}
+        PhysicsScene(){}
+        ~PhysicsScene(){}
+    };
+};

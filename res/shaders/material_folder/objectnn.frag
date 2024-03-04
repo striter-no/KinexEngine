@@ -1,0 +1,66 @@
+#version 460 core
+
+in vec2 TexCoord;
+in vec3 FragPos;
+in float fogAmount;
+
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+struct Light {
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    vec3 color;
+};
+
+uniform Material material;
+uniform Light light;
+
+uniform vec3 objColor;
+uniform vec3 viewPos;
+
+out vec4 color;
+
+vec3 VHSFilter(vec3 inputColor, float intensity){
+    vec3 result = inputColor * intensity;
+    result = clamp(result, 0.0, 1.0);
+    return result;
+}
+
+void main(){
+    vec3 ambient = light.ambient * material.ambient;
+  	
+    // diffuse 
+    // vec3 norm = normalize(Normal);
+    // vec3 lightDir = normalize(light.position - FragPos);
+    // float diff = max(dot(norm, lightDir), 0.f);
+    // vec3 diffuse = light.diffuse * (diff * material.diffuse);
+    
+    // // specular
+    // vec3 viewDir = normalize(viewPos - FragPos);
+    // vec3 reflectDir = reflect(-lightDir, norm);  
+    // float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // vec3 specular = light.specular * (spec * material.specular);  
+        
+    vec3 result = ambient;// + diffuse + specular;
+    result *= objColor; 
+    result = VHSFilter(
+        result,
+        2.2f
+    );
+    // result = mix(result, vec3(0.6f, 0.8f, 0.9f),//0.8f, 0.8f, 0.9f), 
+                //  min(1.f, length(viewPos-FragPos)*0.1f));
+    
+    // vec2 txcd = vec2(TexCoord.x, 1.0f - TexCoord.y);
+    // vec4 txtColor = texture(floorTexture, txcd);
+
+    color = vec4(result, 1.f);
+    // color = vec4(mix(txtColor, vec4(result, 1.f), 0.8f)); 
+}
