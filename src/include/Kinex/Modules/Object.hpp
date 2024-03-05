@@ -75,8 +75,8 @@ namespace knx{
 
                 shader->setUniform("isTextureEnabled", textures.size()>0);
 
-                shader->setUniform("objColor", color);
-                shader->setUniform("viewPos", camera->getTransform().getPosition());
+                // shader->setUniform("objColor", color);
+                // shader->setUniform("viewPos", camera->getTransform().getPosition());
                 shader->setUniform("view", view);
                 shader->setUniform("model", model);
                 shader->setUniform("projection", proj);
