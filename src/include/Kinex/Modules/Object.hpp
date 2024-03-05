@@ -57,22 +57,6 @@ namespace knx{
                 auto model = transform.getModelMatrix();
                 auto proj = camera->getProj();
 
-                cout<<"view: \n";
-                printMat4(view);
-
-                cout<<"model: \n";
-                printMat4(model);
-
-                cout<<"proj: \n";
-                printMat4(proj);
-
-                auto point = proj * view * model * glm::vec4(to_g3(meshPtr->getPoint(0)), 1);
-                cout<<"point: "<< 
-                    point.x << ' ' << 
-                    point.y << ' ' << 
-                    point.z << ' ' <<
-                    point.w << endl;
-
                 shader->setUniform("isTextureEnabled", textures.size()>0);
 
                 // shader->setUniform("objColor", color);
@@ -84,7 +68,7 @@ namespace knx{
                     shader->setUniform("normals_mat", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
                 }
 
-                material->update(shader);
+                // material->update(shader);
 
                 if(mesh.getType() == VERTEX_NORMALS_TEXTURES || mesh.getType() == VERTEX_TEXTURES){
                     int index = 0;

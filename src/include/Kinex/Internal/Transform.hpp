@@ -44,16 +44,16 @@ namespace knx{
             }
 
             glm::mat4x4 getPositionMatrix(vec3f position = -1){ 
-                // if(position != -1.f) 
-                //     this->v_position = position; 
+                if(position != -1.f) 
+                    this->v_position = position; 
                 return glm::translate(ident, to_g3(v_position)); 
             }
 
             glm::mat4x4 getViewMatrix(vec3f position = -1, vec3f rotation = -1){
-                // if(rotation != -1.f) 
-                //     this->v_rotation = rotation; 
-                // if(position != -1.f) 
-                //     this->v_position = position;
+                if(rotation != -1.f) 
+                    this->v_rotation = rotation; 
+                if(position != -1.f) 
+                    this->v_position = position;
                 return glm::lookAt(
                     to_g3(v_position), 
                     to_g3(v_position + getFront()), 
@@ -62,8 +62,8 @@ namespace knx{
             }
 
             glm::mat4x4 getRotationMatrix(vec3f rotation = -1){ 
-                // if(rotation != -1.f) 
-                //     this->v_rotation = rotation; 
+                if(rotation != -1.f) 
+                    this->v_rotation = rotation; 
                 return  glm::rotate(
                             glm::rotate(
                                 glm::rotate( ident, 

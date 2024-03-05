@@ -85,15 +85,14 @@ namespace knx{
                 [&](){
                     for(auto &pr: gameObjects){
                         // pr.second->getShaderPointer()->printInfo();
-                        lightScene.update(*pr.second);
+                        // lightScene.update(*pr.second);
                         pr.second->draw();
                     }
                     drawFunc();
                 }, 
                 [&](){
                     if(isFPCSetted) fpc.update(inputSystem, physicsScene);
-                    // if(isCACSetted) 
-                    camcont.update();
+                    if(isCACSetted) camcont.update();
 
                     inputSystem.update();
                     physicsScene.update();
@@ -126,13 +125,6 @@ namespace knx{
             inputSystem = Input(window);
             physicsScene = PhysicsScene(env, isPhysicsEnabled);
             time = Time(window);
-
-            // glMatrixMode(GL_PROJECTION);
-            // glLoadIdentity();
-            // glFrustum(-(float)res.x/(float)res.y * 0.1, (float)res.x/(float)res.y * 0.1, -1 * 0.1, 0.1,  0.1, 1000);
-            //glScalef(10, 10, 10);
-            //glTranslatef(0, 0, 0);
-            // glMatrixMode(GL_MODELVIEW);
         }
 
         Core(){}

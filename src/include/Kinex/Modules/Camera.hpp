@@ -36,14 +36,12 @@ namespace knx{
         }
 
         void rotate(float rotX, float rotY, bool constrPitch = true){
-            rotX *= sensivity; transform.getRotation().x += rotX;
+            rotX *= sensivity; transform.getRotation().x -= rotX;
             rotY *= sensivity; transform.getRotation().y += rotY;
 
-            // cout<<"rotate: "<<transform.getRotation().str()<<endl;
-
             if (constrPitch){
-                if (transform.getRotation().x > 89.0f)  transform.getRotation().x = 89.0f;
-                if (transform.getRotation().x < -89.0f) transform.getRotation().x = -89.0f;
+                if (transform.getRotation().y > 89.0f)  transform.getRotation().y = 89.0f;
+                if (transform.getRotation().y < -89.0f) transform.getRotation().y = -89.0f;
             }
         }
 
@@ -51,21 +49,20 @@ namespace knx{
             float velocity = speed * deltaTime;
 
             switch(val.x){
-                case -1: transform.getPosition() -= transform.getRight() * velocity;
-                case  1: transform.getPosition() += transform.getRight() * velocity;
+                case  1: transform.getPosition() -= transform.getRight() * velocity; break;
+                case -1: transform.getPosition() += transform.getRight() * velocity; break;
             }
 
             switch(val.z){
-                case -1: transform.getPosition() -= transform.getFront() * velocity;
-                case  1: transform.getPosition() += transform.getFront() * velocity;
+                case  1: transform.getPosition() -= transform.getFront() * velocity; break;
+                case -1: transform.getPosition() += transform.getFront() * velocity; break;
             }
 
             switch(val.y){
-                case -1: transform.getPosition() -= transform.getUp() * velocity;
-                case  1: transform.getPosition() += transform.getUp() * velocity;
+                case  1: transform.getPosition() -= transform.getUp() * velocity; break;
+                case -1: transform.getPosition() += transform.getUp() * velocity; break;
             }
 
-            cout<<"moved: "<<transform.getPosition().str()<<endl;
         }
 
         Camera(irl::Transform transform, float speed, float sensivity):

@@ -449,7 +449,6 @@ namespace knx{
                     
                     if(splitted[0]=="v"){
                         float x = stof(splitted[1]), y = stof(splitted[2]), z = stof(splitted[3]);
-                        cout<<x<<' '<<y<<' '<<z<<endl;
                         vertexes.push_back({x, y, z});
                     } else if(splitted[0]=="vt"){
                         float x = stof(splitted[1]), y = stof(splitted[2]);
@@ -491,7 +490,6 @@ namespace knx{
                         if(normals.size()>0) {data.push_back(normals[na-1].x); data.push_back(normals[na-1].y); data.push_back(normals[na-1].z);}
                         else if(addNormals){data.push_back(enormal.x); data.push_back(enormal.y); data.push_back(enormal.z);}
                         if(uvertexes.size()>0) {data.push_back(uvertexes[ua-1].x); data.push_back(uvertexes[ua-1].y);}
-
                     }
                 }
                 bool isnormals = normals.size()>0;

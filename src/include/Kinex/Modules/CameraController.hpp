@@ -13,8 +13,6 @@ namespace knx{
         void update(){
             camera->rotate(input->getCursorAxisX(true), input->getCursorAxisY(true));
 
-            cout<<input->getCursorAxisX(true)<<endl;
-
             camera->move({
                 (int)input->getAxisX(),
                 (int)input->getAxisY(),

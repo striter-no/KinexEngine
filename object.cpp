@@ -95,7 +95,7 @@ int main(){
         core.update(
             [&](){
                 // cosmo.getTransform().rotate(vec3f{0, 10, 0});
-                cosmo.getTransform().setPosition({sin(core.getWindow().getTick()*0.1)*10, 0, 5});
+                // cosmo.getTransform().setPosition({sin(core.getWindow().getTick()*0.1)*10, 0, 5});
                 // cout<<"Draw done\n";
             }, // Draw
             [&](){

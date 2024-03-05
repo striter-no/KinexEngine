@@ -76,7 +76,7 @@ void main(){
     // if(isTextureEnabled) result = mix(texture(currtexture, txcd).rgb, result, 0.5f);
     
     // result *= ;
-    FragColor = vec4(1, 1, 1, 1.0); // objColor, 
+    FragColor = vec4(1); // objColor, 
 }
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){

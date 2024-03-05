@@ -22,14 +22,14 @@ namespace knx{
         bool isKeyPressed(int key){return glfwGetKey(window->getWindow(), key); }
 
         float getAxisX(){
-            if(isKeyPressed(GLFW_KEY_A) || isKeyPressed(GLFW_KEY_LEFT))  return -1;
-            if(isKeyPressed(GLFW_KEY_D) || isKeyPressed(GLFW_KEY_RIGHT)) return 1;
+            if(isKeyPressed(GLFW_KEY_A) || isKeyPressed(GLFW_KEY_LEFT))  {return -1;}
+            if(isKeyPressed(GLFW_KEY_D) || isKeyPressed(GLFW_KEY_RIGHT)) {return 1;}
             return 0;
         }
 
         float getAxisY(){
-            if(isKeyPressed(GLFW_KEY_Q)) return -1;
-            if(isKeyPressed(GLFW_KEY_E)) return 1;
+            if(isKeyPressed(GLFW_KEY_Q)) {return -1;}
+            if(isKeyPressed(GLFW_KEY_E)) {return 1;}
             return 0;
         }
 
@@ -45,8 +45,8 @@ namespace knx{
 
 
         float getAxisZ(){
-            if(isKeyPressed(GLFW_KEY_W) || isKeyPressed(GLFW_KEY_UP))   return -1;
-            if(isKeyPressed(GLFW_KEY_S) || isKeyPressed(GLFW_KEY_DOWN)) return 1;
+            if(isKeyPressed(GLFW_KEY_W) || isKeyPressed(GLFW_KEY_UP)) { return -1;}
+            if(isKeyPressed(GLFW_KEY_S) || isKeyPressed(GLFW_KEY_DOWN)) { return 1; }
             return 0;
         }
 
