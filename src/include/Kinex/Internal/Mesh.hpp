@@ -417,7 +417,7 @@ namespace knx{
                         break;
                     }
                     case VERTEX_TEXTURES :         {
-
+                        cout<<"setup\n";
                         vao.setup();
                         vbo.setup();
                         vao.use();
@@ -498,10 +498,10 @@ namespace knx{
                 if(isnormals){shift+=3;}
                 if(istexs){shift+=2;}
 
-                if(isnormals && !istexs>0)      type = VERTEX_NORMALS;
-                else if(!isnormals && istexs>0) type = VERTEX_TEXTURES;
-                else if(isnormals && istexs>0)  type = VERTEX_NORMALS_TEXTURES;
-                else                            type = ONLY_VERTEXES;
+                if(isnormals && !istexs)      type = VERTEX_NORMALS;
+                else if(!isnormals && istexs) type = VERTEX_TEXTURES;
+                else if(isnormals && istexs)  type = VERTEX_NORMALS_TEXTURES;
+                else                          type = ONLY_VERTEXES;
             }
 
             Mesh(vector<float> data, bool normalsEn, bool textureEn): data(data) {
@@ -511,10 +511,10 @@ namespace knx{
                 if(isnormals){shift+=3;}
                 if(istexs){shift+=2;}
 
-                if(isnormals && !istexs>0)      type = VERTEX_NORMALS;
-                else if(!isnormals && istexs>0) type = VERTEX_TEXTURES;
-                else if(isnormals && istexs>0)  type = VERTEX_NORMALS_TEXTURES;
-                else                            type = ONLY_VERTEXES;
+                if(isnormals && !istexs)      type = VERTEX_NORMALS;
+                else if(!isnormals && istexs) type = VERTEX_TEXTURES;
+                else if(isnormals && istexs)  type = VERTEX_NORMALS_TEXTURES;
+                else                          type = ONLY_VERTEXES;
             }
 
             Mesh(){}

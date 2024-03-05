@@ -49,7 +49,7 @@ uniform bool isPointLightEnabled;     uniform PointLight pointLight;
 uniform bool isDirectionLightEnabled; uniform DirLight dirLight;
 uniform bool isTextureEnabled;        uniform sampler2D currtexture;
 
-// in vec2 TexCoord;
+in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 out vec4 FragColor;
@@ -62,21 +62,20 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
-void main(){    
-    // vec2 txcd;
-    // if(isTextureEnabled) txcd = vec2(TexCoord.x, 1.0f - TexCoord.y);
+void main(){
+    vec2 txcd;
+    txcd = vec2(TexCoord.x, 1.0f - TexCoord.y);
+    // if(isTextureEnabled) 
     // vec3 norm = normalize(Normal);
     // vec3 viewDir = normalize(viewPos - FragPos);
 
-    // vec3 result = vec3(0, 0, 0);
+    vec3 result = {1};
     // if(isDirectionLightEnabled) result += CalcDirLight(dirLight, norm, viewDir);
     // if(isPointLightEnabled) result += CalcPointLight(pointLight, norm, FragPos, viewDir);    
     // if(isSpotLightEnabled) result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     
-    // if(isTextureEnabled) result = mix(texture(currtexture, txcd).rgb, result, 0.5f);
-    
-    // result *= ;
-    FragColor = vec4(1); // objColor, 
+    if(isTextureEnabled) result = mix(texture(currtexture, txcd).rgb, result, 0.5f);
+    FragColor = texture(currtexture, txcd);//vec4(result, 1); // objColor, 
 }
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){

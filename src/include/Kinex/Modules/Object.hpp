@@ -70,7 +70,7 @@ namespace knx{
 
                 // material->update(shader);
 
-                if(mesh.getType() == VERTEX_NORMALS_TEXTURES || mesh.getType() == VERTEX_TEXTURES){
+                if(meshPtr->getType() == VERTEX_NORMALS_TEXTURES || meshPtr->getType() == VERTEX_TEXTURES){
                     int index = 0;
                     for(auto &pr: textures){
                         shader->setUniform(pr.first, pr.second, index);
@@ -87,27 +87,21 @@ namespace knx{
                name(name), transform(transform), camera(camera) {
             type = RAW_OBJECT;
         }
-        Object(string name, irl::Transform transform, irl::Mesh mesh, Camera *camera, irl::Shader *shader, irl::Material *material, vec3f color = 1, GLuint drawMode = GL_STATIC_DRAW):  color(color), drawMode(drawMode), material(material), 
-               name(name), transform(transform), mesh(mesh), camera(camera), shader(shader) {
+        Object(string name, irl::Transform transform, Camera *camera, irl::Shader *shader, irl::Material *material, vec3f color = 1, GLuint drawMode = GL_STATIC_DRAW):  color(color), drawMode(drawMode), material(material), 
+               name(name), transform(transform), camera(camera), shader(shader) {
             type = MESH_OBJECT;
         }
-        Object(string name, irl::Transform transform, irl::Mesh mesh, map<string, irl::Texture> textures, Camera *camera, irl::Shader *shader, irl::Material *material, vec3f color = 1, GLuint drawMode = GL_STATIC_DRAW): color(color), drawMode(drawMode), material(material), 
-               name(name), transform(transform), mesh(mesh), textures(textures), camera(camera), shader(shader) {
+        Object(string name, irl::Transform transform, map<string, irl::Texture> textures, Camera *camera, irl::Shader *shader, irl::Material *material, vec3f color = 1, GLuint drawMode = GL_STATIC_DRAW): color(color), drawMode(drawMode), material(material), 
+               name(name), transform(transform), textures(textures), camera(camera), shader(shader) {
             type = MESH_TEXTURES_OBJECT;
-
-            mesh.setupBuffers(*shader);
         }
         Object(string name, irl::Transform transform, irl::VBO *vbo, Camera *camera, irl::Shader *shader, irl::Material *material, vec3f color = 1, GLuint drawMode = GL_STATIC_DRAW): color(color), drawMode(drawMode), material(material), 
                name(name), transform(transform), vbo_ptr(vbo), camera(camera), shader(shader) {
             type = OPTIMIZED_OBJECT;
-
-            mesh.setupBuffers(*shader);
         }
         Object(string name, irl::Transform transform, irl::VBO *vbo, map<string, irl::Texture*> textures, Camera *camera, irl::Shader *shader, irl::Material *material, vec3f color = 1, GLuint drawMode = GL_STATIC_DRAW): color(color), drawMode(drawMode), material(material), 
                name(name), transform(transform), vbo_ptr(vbo), textures_ptr(textures), camera(camera), shader(shader) {
             type = OPTIMIZED_TEXTURED_OBJECT;
-
-            mesh.setupBuffers(*shader);
         }
 
         Object(){}

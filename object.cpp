@@ -63,39 +63,35 @@ int main(){
     );
     
     auto mesh = knx::irl::Mesh(
-            knx::irl::meshes::cubemesh_notextures,
-            false, false
-            // "res/models/Cosmo.obj",
-            // false
-            // {0.0f, 0.0f, 0.0f,
-            // 1.0f, 0.0f, 0.0f,
-            // 0.0f, 1.0f, 0.0f},
-            // false, false
+            knx::irl::meshes::cubemesh,
+            false, true
     );
     mesh.setupBuffers(*core.getShaderPointer("objectShader"));
 
-    knx::Object cosmo(
-        "Cosmo",
+    core.addTexture("currtexture", knx::irl::Texture("res/floor.png"));
+    cout<<"texture end\n";
+
+    knx::Object cube(
+        "Cube",
         knx::irl::Transform(
             {3, 0, -5}, // Position
             {0, 0, 0}  // Rotation
-        ),
-        knx::irl::Mesh(
-            "res/models/Cosmo.obj",
-            false
-        ),
+        ), {{"currtexture", core.getTexture("currtexture")}},
         core.getCameraPointer(),
         core.getShaderPointer("objectShader"),
         core.getMaterialPointer("cubeMaterial")
     );
-    cosmo.meshPtr = &mesh;
-    core.addObject("Cosmo", &cosmo);
+    cout<<"cube end\n";
+    cube.meshPtr = &mesh;
+    core.addObject("Cosmo", &cube);
+
+    cout<<"core end\n";
 
     while(core.isRunning()){
         core.update(
             [&](){
-                // cosmo.getTransform().rotate(vec3f{0, 10, 0});
-                // cosmo.getTransform().setPosition({sin(core.getWindow().getTick()*0.1)*10, 0, 5});
+                // cube.getTransform().rotate(vec3f{0, 10, 0});
+                // cube.getTransform().setPosition({sin(core.getWindow().getTick()*0.1)*10, 0, 5});
                 // cout<<"Draw done\n";
             }, // Draw
             [&](){

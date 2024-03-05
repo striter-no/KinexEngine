@@ -76,10 +76,10 @@ namespace knx{
                                                 0, cnt == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, img);
                 glGenerateMipmap(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, 0);
-                if(freeThis) {
-                    stbi_image_free(img);
-                    type = STANDART_GL_TEXTURE;
-                }
+                // if(freeThis) {
+                //     stbi_image_free(img);
+                //     type = STANDART_GL_TEXTURE;
+                // }
             }
 
             void loadFromData(u_char *data, int w, int h, int cnt_ = 3, bool freeThis = false){
@@ -99,10 +99,10 @@ namespace knx{
                                                 0, cnt == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
                 glGenerateMipmap(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, 0);
-                if(freeThis) {
-                    stbi_image_free(img);
-                    type = STANDART_GL_TEXTURE;
-                }
+                // if(freeThis) {
+                //     stbi_image_free(img);
+                //     type = STANDART_GL_TEXTURE;
+                // }
             }
 
             void use(){
@@ -115,9 +115,9 @@ namespace knx{
 
             Texture(){}
             ~Texture(){
-                if(type!=PTR_DATA_TEXTURE && (type == DATA_TEXTURE || type == GL_DATA_TEXTURE)){
-                    stbi_image_free(img);
-                }
+                // if(type!=PTR_DATA_TEXTURE && (type == DATA_TEXTURE || type == GL_DATA_TEXTURE)){
+                //     stbi_image_free(img);
+                // }
             }
         };
     };
