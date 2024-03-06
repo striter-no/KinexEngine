@@ -18,8 +18,10 @@ namespace knx{
             bool isTransparent = false;
             bool isStatic = false;
             
+
             Transform *transformPtr;
             public:
+            bool isCollided = false;
 
             Transform &getTransform(){
                 return *transformPtr;
@@ -42,7 +44,7 @@ namespace knx{
             void linkTransform(Transform *transform){transformPtr = transform;}
 
             void addVelocity(const vec3f &vel){
-                velocity = vel;
+                velocity += vel;
             }
 
             const Collision processCollision(RigidBody &other){
@@ -53,19 +55,10 @@ namespace knx{
                 localOtherHitbox.move((other.transformPtr->getPosition()) + ((other.velocity * (1 / other.mass)) * other.transformPtr->getRotation()));
                 
                 vec3f vnormal;
-                Collision collision(
-                    localHitbox.intersects(localOtherHitbox, vnormal),
-                    vnormal,
-                    velocity * (1/mass),
-                    (other.velocity * (1 / other.mass)),
-                    norm(velocity * (1/mass)),
-                    norm((other.velocity * (1 / other.mass))),
-                    hitbox,
-                    other.hitbox
-                );
+                bool isCollided_l = localHitbox.intersects(localOtherHitbox, vnormal);
+                if(!isCollided) isCollided = isCollided_l;
 
-                if(collision.getCollidedStatus()){
-                    
+                if(isCollided_l){
                     if((other.hitbox.getUpperCenter().y - hitbox.getLowerCenter().y) <= 0 || (hitbox.getLowerCenter().y - other.hitbox.getUpperCenter().y) <= 0) {
 						velocity.y = 0;
 					}
@@ -76,17 +69,45 @@ namespace knx{
 							velocity.z = 0;
 					}
 
-                    transformPtr->setPosition((transformPtr->getPosition()) / 
-                        (((isStatic || velocity * (1/mass) == 0.f) ? material.StaticFriction : material.DynamicFriction) + 
-                         ((other.isStatic || (other.velocity * (1 / other.mass)) == 0.f) ? other.material.StaticFriction : other.material.DynamicFriction)) 
-                        / 2.f);
+                    cout<<velocity.str()<<endl;
 
-                    transformPtr->setPosition((transformPtr->getPosition()) * reflect(
-                        transformPtr->getRotation(), 
-                        collision.getNormal()
-                    ) * (material.Bounciness + other.material.Bounciness) / 2.f);
+                    cout<<(other.hitbox.getUpperCenter().y - hitbox.getLowerCenter().y)<<' '<<(hitbox.getLowerCenter().y - other.hitbox.getUpperCenter().y)<<endl;
+                    cout<<abs(hitbox.getDotMin().y-other.hitbox.getDotMax().y)<<endl;
+                    cout<<other.hitbox.getLeftCenter().x - hitbox.getRightCenter().x<<' '<<hitbox.getRightCenter().x - other.hitbox.getLeftCenter().x<<endl;
+                    cout<<other.hitbox.getFrontCenter().z - hitbox.getBackwardCenter().z<<' '<<hitbox.getBackwardCenter().z - other.hitbox.getFrontCenter().z<<endl;
+
+                    // pause();
+                    
+
+                    // transformPtr->setPosition(
+                    //     (transformPtr->getPosition()) / 
+                    //     (((isStatic || velocity * (1/mass) == 0.f) ? 
+                    //         material.StaticFriction : 
+                    //         material.DynamicFriction) 
+                    //     + (
+                    //         (other.isStatic || (other.velocity * (1 / other.mass)) == 0.f) ? 
+                    //             other.material.StaticFriction : 
+                    //             other.material.DynamicFriction
+                    //         )
+                    //     ) / 2.f
+                    // );
+
+                    // transformPtr->setPosition((transformPtr->getPosition()// * reflect(
+                    //     transformPtr->getRotation(), 
+                    //     collision.getNormal()
+                    // ) * (material.Bounciness + other.material.Bounciness) / 2.f);
                 
                 }
+                Collision collision(
+                    isCollided_l,
+                    vnormal,
+                    velocity * (1/mass),
+                    (other.velocity * (1 / other.mass)),
+                    norm(velocity * (1/mass)),
+                    norm((other.velocity * (1 / other.mass))),
+                    hitbox,
+                    other.hitbox
+                );
 
                 return collision;
             }
@@ -94,13 +115,19 @@ namespace knx{
             void update(const PhysicsEnviroment &env){
                 if(abs(velocity.x) <= VELOCITY_TRESHOLD) velocity.x = 0;
 				if(abs(velocity.z) <= VELOCITY_TRESHOLD) velocity.z = 0;
+                
 
-                transformPtr->getRotation() = norm(velocity);
-                velocity /= vec3f(env.AirResistance, 1, env.AirResistance);
-            
-                velocity -= env.Gravity * mass;
-				if(velocity.y < 0) velocity.y *= env.AirResistance;
+                // velocity /= vec3f(env.AirResistance, 1, env.AirResistance);
+                if(!isCollided) velocity -= env.Gravity * mass;
+                if(velocity.y < 0) velocity.y *= env.AirResistance;
+                
+                transformPtr->getPosition() += velocity;
+                cout<<"plus: "<<velocity.str()<<endl;
+                transformPtr->setRotation(norm(velocity));
             }
+
+            void setStatic(bool mode){isStatic = mode;}
+            bool getStatic(){return isStatic;}
 
             RigidBody(
                 PhysicsMaterial material,
@@ -108,7 +135,7 @@ namespace knx{
                 vec3f direction,
                 vec3f velocity,
                 Hitbox hitbox,
-
+                Transform *transformPointer,
                 bool isTransparent = false,
                 bool isStatic = false
             ):  material(material),
@@ -117,7 +144,11 @@ namespace knx{
                 hitbox(hitbox),
                 
                 isTransparent(isTransparent),
-                isStatic(isStatic) {transformPtr->getRotation() = direction;}
+                transformPtr(transformPointer),
+                isStatic(isStatic) 
+            {
+                transformPtr->getRotation() = direction;
+            }
 
             RigidBody(){}
             ~RigidBody(){}

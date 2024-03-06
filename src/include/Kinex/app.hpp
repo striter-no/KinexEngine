@@ -27,7 +27,14 @@ namespace knx{
         public:
 
         void addMaterial(string name, irl::Material material){materials[name] = material;}
-        void addObject(string name, Object *object){gameObjects[name] = object;}
+        void addObject(string name, Object *object, bool addRB = true, bool isTransperent = false, bool isStatic = false){
+            gameObjects[name] = object; 
+            if(addRB){
+                object->initRigidBody({0, 0, 0}, 1, {0}, {0}, isTransperent, isStatic);
+                physicsScene.addRigidBody(name, object->getRigidBodyPointer());
+                physicsScene.getRigidBody(name)->linkTransform(object->getTransformPointer());
+            }
+        }
         void addShader(string name, irl::Shader *shader){shaders[name] = shader;}
         void addTexture(string name, irl::Texture texture){textures[name] = texture;}
 

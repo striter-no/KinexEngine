@@ -23,6 +23,10 @@ namespace knx{
             rigidBodys[name] = rigidBody;
         }
 
+        irl::RigidBody *getRigidBody(string name){
+            return rigidBodys[name];
+        }
+
         irl::Collision isRigidBodyCollided(string name, string name2){
             return rigidBodys[name]->processCollision(*rigidBodys[name2]);
         }
@@ -44,12 +48,12 @@ namespace knx{
         vector<irl::Collision> getAllCollisionWithRigidBody(string name){
             vector<irl::Collision> out;
             for(auto &pr: rigidBodys){ irl::RigidBody *rb = pr.second;
-                rb->update(enviroment);
                 for(auto &pr2: rigidBodys){ 
                     if(pr.first == pr2.first) continue;
                     auto info = rb->processCollision(*pr2.second);
                     if(info.getCollidedStatus()) out.push_back(info);
                 }
+                rb->update(enviroment);
             }
             return {out};
         }
@@ -58,10 +62,19 @@ namespace knx{
             if(!state) return;
 
             for(auto &pr: rigidBodys){ irl::RigidBody *rb = pr.second;
+                if(rb->getStatic()) continue;
+                cout<<"update "<<pr.first<<endl;
                 rb->update(enviroment);
+                cout<<"updated\n";
                 for(auto &pr2: rigidBodys){ 
                     if(pr.first == pr2.first) continue;
+                    cout<<"calciulating collision with "<<pr2.first<<"...\n";
                     irl::Collision collision = rb->processCollision(*pr2.second);
+                    cout<<"calculated!\n";
+
+                    cout<<"collision info: \n"<<
+                        "\t"<<to_stringb(collision.getCollidedStatus())<<endl<<
+                        "\t"<<collision.getVelocity().str()<<endl;
                 }
             }
         }

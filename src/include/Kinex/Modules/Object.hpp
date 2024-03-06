@@ -23,7 +23,6 @@ namespace knx{
         irl::RigidBody rigidBody;
         irl::Material *material;
         irl::Shader *shader;
-        irl::Mesh mesh;
 
         vec3f color;
 
@@ -37,16 +36,16 @@ namespace knx{
         irl::Shader        *getShaderPointer()     { return shader; }
         irl::RigidBody     *getRigidBodyPointer()  { return &rigidBody; }
         irl::VBO           *getVBOPointer()        { return vbo_ptr; }
+        irl::Transform     *getTransformPointer()  { return &transform; }
         irl::RigidBody     &getRigidbody()         { return rigidBody; }
         irl::Transform     &getTransform()         { return transform; }
-        const irl::Mesh    &getMesh()              { return mesh; }
         const irl::Texture &getTexture(string name){ return textures[name]; }
         
+
         const OBJECT_TYPE &getType(){ return type; }
         const map<string, irl::Texture> getTextures(){ return textures; }
 
         void setTexture(string name, const irl::Texture &val){ textures[name] = val;}
-        void setMesh(const irl::Mesh &val){ mesh = val; }
         void setVBO(const irl::VBO &val){ vbo = val; }
         void setVBO(irl::VBO *val){ vbo_ptr = val; }
 
@@ -81,6 +80,26 @@ namespace knx{
                 meshPtr->draw();
             shader->de_use();
             // pause();
+        }
+
+        void initRigidBody(
+            irl::PhysicsMaterial material,
+            float mass,
+            vec3f direction,
+            vec3f velocity,
+            bool isTransparent = false,
+            bool isStatic = false
+        ){
+            rigidBody = irl::RigidBody(
+                material, 
+                mass, 
+                direction, 
+                velocity, 
+                irl::Hitbox(*meshPtr), 
+                &transform, 
+                isTransparent, 
+                isStatic
+            );
         }
 
         Object(string name, irl::Transform transform, Camera *camera, GLuint drawMode = GL_STATIC_DRAW):  drawMode(drawMode), 
