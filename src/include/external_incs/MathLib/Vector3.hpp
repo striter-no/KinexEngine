@@ -12,7 +12,7 @@ namespace eml{
         vec3(T a, vec2<T> v){x = a; y = v.x; z = v.y;}
         vec3(T x_, T y_, T z_){x = x_; y = y_; z = z_;}
         vec3(){};
-        const std::string str(){return "{"+std::to_string(x)+", "+std::to_string(y)+", "+std::to_string(z)+"}";}
+        const std::string str() const {return "{"+std::to_string(x)+", "+std::to_string(y)+", "+std::to_string(z)+"}";}
     
         T &operator[](int ind){
             switch(ind){

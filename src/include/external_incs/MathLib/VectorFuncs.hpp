@@ -40,7 +40,7 @@ eml::vec3i vec3f_ti(eml::vec3f v){return {round(v.x), round(v.y), round(v.z)};};
 eml::vec4i vec4f_ti(eml::vec4f v){return {round(v.x), round(v.y), round(v.z), round(v.w)};};
 
 eml::vec3f abs(eml::vec3f v){ return {std::abs(v.x), std::abs(v.y), std::abs(v.z)};}
-eml::vec3f norm(eml::vec3f a){ return len(a) != 0 ? a / len(a): eml::vec3f(0, 0, 0); }
+eml::vec3f norm(eml::vec3f a){ return (len(a) != 0) ? (a / len(a)) : (eml::vec3f(0, 0, 0)); }
 eml::vec3f clamp(float a, float b, eml::vec3f v){ return {adm::clamp(a, b, v.x), adm::clamp(a, b, v.y), adm::clamp(a, b, v.z)}; }
 eml::vec3f cross(eml::vec3f a, eml::vec3f b){ return { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x }; }
 eml::vec3f lerp(eml::vec3f a, eml::vec3f b, eml::vec3f f){ return {adm::lerp(a.x, b.x, f.x), adm::lerp(a.y, b.y, f.y), adm::lerp(a.z, b.z, f.z)};}
@@ -74,6 +74,14 @@ eml::vec4i round(eml::vec4f v){return {round(v.x), round(v.y), round(v.z), round
 eml::vec2i round(eml::vec2d v){return {round(v.x), round(v.y)};}
 eml::vec3i round(eml::vec3d v){return {round(v.x), round(v.y), round(v.z)};}
 eml::vec4i round(eml::vec4d v){return {round(v.x), round(v.y), round(v.z), round(v.w)};}
+
+eml::vec2f rad(eml::vec2f v){return {adm::rad(v.x), adm::rad(v.y)};}
+eml::vec3f rad(eml::vec3f v){return {adm::rad(v.x), adm::rad(v.y), adm::rad(v.z)};}
+eml::vec4f rad(eml::vec4f v){return {adm::rad(v.x), adm::rad(v.y), adm::rad(v.z), adm::rad(v.w)};}
+
+eml::vec2d rad(eml::vec2d v){return {adm::rad(v.x), adm::rad(v.y)};}
+eml::vec3d rad(eml::vec3d v){return {adm::rad(v.x), adm::rad(v.y), adm::rad(v.z)};}
+eml::vec4d rad(eml::vec4d v){return {adm::rad(v.x), adm::rad(v.y), adm::rad(v.z), adm::rad(v.w)};}
 
 bool isRectIntersect(
     rectf_t r1, rectf_t r2
