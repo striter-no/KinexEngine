@@ -20,11 +20,11 @@ namespace knx{
             void setSpecular(const vec3f &specular){this->specular = specular; }
 
             void update(Shader *shader){
-                shader->use();
+                // shader->use();
                     shader->setUniform(name+".diffuse", diffuse);
                     shader->setUniform(name+".specular", specular);
                     shader->setUniform(name+".shininess", shininess);
-                shader->de_use();
+                // shader->de_use();
             }
 
             Material(float shininess, vec3f diffuse, vec3f specular, string name = "material"): 

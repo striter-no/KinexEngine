@@ -417,7 +417,6 @@ namespace knx{
                         break;
                     }
                     case VERTEX_TEXTURES :         {
-                        cout<<"setup\n";
                         vao.setup();
                         vbo.setup();
                         vao.use();
@@ -476,20 +475,21 @@ namespace knx{
                             enormal = normal(vertexes[a-1], vertexes[b-1], vertexes[c-1]);
                         }
                         
-                        data.push_back(vertexes[c-1].x); data.push_back(vertexes[c-1].y); data.push_back(vertexes[c-1].z);
-                        if(normals.size()>0) {data.push_back(normals[nc-1].x); data.push_back(normals[nc-1].y); data.push_back(normals[nc-1].z);}
-                        else if(addNormals){data.push_back(enormal.x); data.push_back(enormal.y); data.push_back(enormal.z);}
-                        if(uvertexes.size()>0) {data.push_back(uvertexes[uc-1].x); data.push_back(uvertexes[uc-1].y);}
-
-                        data.push_back(vertexes[b-1].x); data.push_back(vertexes[b-1].y); data.push_back(vertexes[b-1].z);
-                        if(normals.size()>0) {data.push_back(normals[nb-1].x); data.push_back(normals[nb-1].y); data.push_back(normals[nb-1].z);}
-                        else if(addNormals){data.push_back(enormal.x); data.push_back(enormal.y); data.push_back(enormal.z);}
-                        if(uvertexes.size()>0) {data.push_back(uvertexes[ub-1].x); data.push_back(uvertexes[ub-1].y);}
 
                         data.push_back(vertexes[a-1].x); data.push_back(vertexes[a-1].y); data.push_back(vertexes[a-1].z);
                         if(normals.size()>0) {data.push_back(normals[na-1].x); data.push_back(normals[na-1].y); data.push_back(normals[na-1].z);}
                         else if(addNormals){data.push_back(enormal.x); data.push_back(enormal.y); data.push_back(enormal.z);}
                         if(uvertexes.size()>0) {data.push_back(uvertexes[ua-1].x); data.push_back(uvertexes[ua-1].y);}
+
+                        data.push_back(vertexes[b-1].x); data.push_back(vertexes[b-1].y); data.push_back(vertexes[b-1].z);
+                        if(normals.size()>0) {data.push_back(normals[nb-1].x); data.push_back(normals[nb-1].y); data.push_back(normals[nb-1].z);}
+                        else if(addNormals){data.push_back(enormal.x); data.push_back(enormal.y); data.push_back(enormal.z);}
+                        if(uvertexes.size()>0) {data.push_back(uvertexes[ub-1].x); data.push_back(uvertexes[ub-1].y);}
+                        
+                        data.push_back(vertexes[c-1].x); data.push_back(vertexes[c-1].y); data.push_back(vertexes[c-1].z);
+                        if(normals.size()>0) {data.push_back(normals[nc-1].x); data.push_back(normals[nc-1].y); data.push_back(normals[nc-1].z);}
+                        else if(addNormals){data.push_back(enormal.x); data.push_back(enormal.y); data.push_back(enormal.z);}
+                        if(uvertexes.size()>0) {data.push_back(uvertexes[uc-1].x); data.push_back(uvertexes[uc-1].y);}
                     }
                 }
                 bool isnormals = normals.size()>0;

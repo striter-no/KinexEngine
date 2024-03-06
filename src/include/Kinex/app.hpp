@@ -84,8 +84,7 @@ namespace knx{
             window->update(
                 [&](){
                     for(auto &pr: gameObjects){
-                        // pr.second->getShaderPointer()->printInfo();
-                        // lightScene.update(*pr.second);
+                        lightScene.update(*pr.second->getShaderPointer());
                         pr.second->draw();
                     }
                     drawFunc();
@@ -130,6 +129,7 @@ namespace knx{
         Core(){}
         ~Core(){
             window->terminate();
+            delete window;
         }
     };
 };

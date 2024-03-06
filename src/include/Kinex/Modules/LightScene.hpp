@@ -1,8 +1,6 @@
 #pragma once
 #include <Kinex/init.hpp>
 #include "Lightning.hpp"
-
-
 namespace knx{
     class LightningScene{
         
@@ -10,23 +8,23 @@ namespace knx{
         map<string, PointLightSource> pointLightSources;
         map<string, SpotLightSource> spotLightSources;
 
-        void checkLightsEnable(irl::Shader &shader){
+        void checkLightsEnable(irl::Shader &shader, bool needToUse = false){
             if(dirLightSources.size() == 0){
-                shader.use();
+                if(needToUse) shader.use();
                     shader.setUniform("isDirectionLightEnabled", false);
-                shader.de_use();
+                if(needToUse) shader.de_use();
             }
 
             if(pointLightSources.size() == 0){
-                shader.use();
+                if(needToUse) shader.use();
                     shader.setUniform("isPointLightEnabled", false);
-                shader.de_use();
+                if(needToUse) shader.de_use();
             }
 
             if(spotLightSources.size() == 0){
-                shader.use();
+                if(needToUse) shader.use();
                     shader.setUniform("isSpotLightEnabled", false);
-                shader.de_use();
+                if(needToUse) shader.de_use();
             }
         }
 
@@ -44,16 +42,10 @@ namespace knx{
         void deletePointLightSource(string name){pointLightSources.erase(name);}
         void deleteSpotLightSource(string name){spotLightSources.erase(name);}
 
-        void update(irl::Shader &shader){ checkLightsEnable(shader);
+        void update(irl::Shader &shader){ checkLightsEnable(shader, true);
             for(auto &pr:dirLightSources) pr.second.update(shader);
             for(auto &pr:pointLightSources) pr.second.update(shader);
             for(auto &pr:spotLightSources) pr.second.update(shader);
-        }
-
-        void update(Object &object){ checkLightsEnable(*object.getShaderPointer());
-            for(auto &pr:dirLightSources) pr.second.update(object);
-            for(auto &pr:pointLightSources) pr.second.update(object);
-            for(auto &pr:spotLightSources) pr.second.update(object);
         }
 
         LightningScene(){}

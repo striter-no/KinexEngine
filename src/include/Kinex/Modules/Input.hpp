@@ -14,12 +14,14 @@ namespace knx{
 
         vec2f fixCursorPos;
         bool b_fixCursor = false;
+        bool focus = false;
 
         public:
 
         void registrateAction(string name, pair<EVENTS_TYPE, function<void(irl::Event)>> action){ keybinds[name] = action; }
         bool isActionExists(string name){ return keybinds.find(name) != keybinds.end(); }
         bool isKeyPressed(int key){return glfwGetKey(window->getWindow(), key); }
+        bool isWindowInFocus(){return focus;}
 
         float getAxisX(){
             if(isKeyPressed(GLFW_KEY_A) || isKeyPressed(GLFW_KEY_LEFT))  {return -1;}
@@ -51,19 +53,23 @@ namespace knx{
         }
 
         void hideCursor(){
+            focus = true;
             window->hideCursor();
         }
 
         void showCursor(){
+            focus = false;
             window->showCursor();
         }
 
         void fixCursor(vec2f pos){
+            // focus = true;
             fixCursorPos = pos;
             b_fixCursor = true;
         }
 
         void freeCursor(){
+            // focus = true;
             b_fixCursor = false;
         }
 

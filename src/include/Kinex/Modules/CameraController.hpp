@@ -11,13 +11,15 @@ namespace knx{
         public:
 
         void update(){
-            camera->rotate(input->getCursorAxisX(true), input->getCursorAxisY(true));
+            if(input->isWindowInFocus()){
+                camera->rotate(input->getCursorAxisX(true), input->getCursorAxisY(true));
 
-            camera->move({
-                (int)input->getAxisX(),
-                (int)input->getAxisY(),
-                (int)input->getAxisZ()
-            }, time->getDeltaTime());
+                camera->move({
+                    (int)input->getAxisX(),
+                    (int)input->getAxisY(),
+                    (int)input->getAxisZ()
+                }, time->getDeltaTime());
+            }
         }
 
         CameraController(Camera *camera, Input *input, Time *time): camera(camera), input(input), time(time) {

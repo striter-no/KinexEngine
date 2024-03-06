@@ -201,7 +201,6 @@ namespace knx{
             }
 
             void terminate(){
-                cout<<"terminated\n";
                 glfwTerminate();
             }
 

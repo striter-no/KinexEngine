@@ -58,34 +58,51 @@ int main(){
                 0.14f,         // Linear param 
                 0.07f,         // Quadratic param
                 {1.f}          // Color
-            ), knx::irl::Transform(vec3f{0.f, 5.f, 0.f})
+            ), knx::irl::Transform(vec3f{0.f, 2.f, 0.f})
+        )
+    );
+
+    core.getLightScene().addDirectionLightSource("sun2",
+        knx::DirectLightSource(
+            knx::irl::DirectionLight(
+                {0.2f},
+                {1.f},
+                {0.5f},
+                {0, 0, 1}
+            ), knx::irl::Transform({-1}, {0.f, 1.f, 0.f})
+        )
+    );
+
+    core.getLightScene().addSpotLightSource("sun3",
+        knx::SpotLightSource(
+            knx::irl::SpotLight(
+                {0.1f},
+                {.8f},
+                {1.f},
+                cos(rad(12.5)), cos(rad(17.5)), 0.09, 0.032, {0, 1, 0}
+            ), knx::irl::Transform({1}, {0.f, 1.f, 0.f})
         )
     );
     
     auto mesh = knx::irl::Mesh(
-            knx::irl::meshes::cubemesh,
-            false, true
+            knx::irl::meshes::cubemesh_txs_nrms,
+            true, true
     );
     mesh.setupBuffers(*core.getShaderPointer("objectShader"));
 
     core.addTexture("currtexture", knx::irl::Texture("res/floor.png"));
-    cout<<"texture end\n";
-
     knx::Object cube(
         "Cube",
         knx::irl::Transform(
-            {3, 0, -5}, // Position
+            {0, 0, 0}, // Position
             {0, 0, 0}  // Rotation
         ), {{"currtexture", core.getTexture("currtexture")}},
         core.getCameraPointer(),
         core.getShaderPointer("objectShader"),
         core.getMaterialPointer("cubeMaterial")
     );
-    cout<<"cube end\n";
     cube.meshPtr = &mesh;
     core.addObject("Cosmo", &cube);
-
-    cout<<"core end\n";
 
     while(core.isRunning()){
         core.update(
@@ -95,6 +112,9 @@ int main(){
                 // cout<<"Draw done\n";
             }, // Draw
             [&](){
+                
+                core.getLightScene().getSpotLightSource("sun3").getTransform().setPosition(core.getCamera().getTransform().getPosition());
+                core.getLightScene().getSpotLightSource("sun3").getTransform().setRotation(core.getCamera().getTransform().getRotation());
                 // cout<<"Update done\n";
             }, // Update
             [&](){

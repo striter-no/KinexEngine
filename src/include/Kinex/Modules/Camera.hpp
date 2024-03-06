@@ -39,6 +39,9 @@ namespace knx{
             rotX *= sensivity; transform.getRotation().x -= rotX;
             rotY *= sensivity; transform.getRotation().y += rotY;
 
+            if(transform.getRotation().x < 0) transform.getRotation().x = 360;
+            if(transform.getRotation().x > 360) transform.getRotation().x = 0;
+
             if (constrPitch){
                 if (transform.getRotation().y > 89.0f)  transform.getRotation().y = 89.0f;
                 if (transform.getRotation().y < -89.0f) transform.getRotation().y = -89.0f;

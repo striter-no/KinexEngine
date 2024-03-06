@@ -59,16 +59,16 @@ namespace knx{
 
                 shader->setUniform("isTextureEnabled", textures.size()>0);
 
-                // shader->setUniform("objColor", color);
-                // shader->setUniform("viewPos", camera->getTransform().getPosition());
+                shader->setUniform("objColor", color);
+                shader->setUniform("viewPos", camera->getTransform().getPosition());
                 shader->setUniform("view", view);
                 shader->setUniform("model", model);
                 shader->setUniform("projection", proj);
-                if(mesh.getType() == VERTEX_NORMALS || mesh.getType() == VERTEX_NORMALS_TEXTURES){
+                if(meshPtr->getType() == VERTEX_NORMALS || meshPtr->getType() == VERTEX_NORMALS_TEXTURES){
                     shader->setUniform("normals_mat", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
                 }
 
-                // material->update(shader);
+                material->update(shader);
 
                 if(meshPtr->getType() == VERTEX_NORMALS_TEXTURES || meshPtr->getType() == VERTEX_TEXTURES){
                     int index = 0;
@@ -105,8 +105,6 @@ namespace knx{
         }
 
         Object(){}
-        ~Object(){
-            cout<<"object destruct "<<to_stringb(glIsBuffer(mesh.getVBOPtr()->index)==GL_TRUE)<<endl;
-        }
+        ~Object(){}
     };
 };
