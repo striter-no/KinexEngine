@@ -24,6 +24,8 @@ namespace knx{
         map<string, irl::Texture> textures;
         map<string, irl::Material> materials;
 
+        RenderSurface postProcSurf;
+
         public:
 
         void addMaterial(string name, irl::Material material){materials[name] = material;}
@@ -78,6 +80,18 @@ namespace knx{
 
         map<string, Object*> &getObjects(){return gameObjects;}
 
+        void setupPostprocessingFromFile(string shaderPath, std::string posAttr = "position", std::string textureAttr = "texCoord"){
+            postProcSurf = RenderSurface({0}, window->getResolution(), shaderPath, posAttr, textureAttr);
+        }
+
+        void setupPostprocessingFromName(string shaderName, std::string posAttr = "position", std::string textureAttr = "texCoord"){
+            postProcSurf = RenderSurface({0}, window->getResolution(), getShader(shaderName), posAttr, textureAttr);
+        }
+
+        void setupPostprocessingFromMemoty(irl::Shader &shader, std::string posAttr = "position", std::string textureAttr = "texCoord"){
+            postProcSurf = RenderSurface({0}, window->getResolution(), shader, posAttr, textureAttr);
+        }
+
         bool isRunning(){
             return window->isOpen();
         }
@@ -90,11 +104,13 @@ namespace knx{
             window->pollEvents();
             window->update(
                 [&](){
+                    
                     for(auto &pr: gameObjects){
                         lightScene.update(*pr.second->getShaderPointer());
                         pr.second->draw();
                     }
                     drawFunc();
+                    
                 }, 
                 [&](){
                     if(isFPCSetted) fpc.update(inputSystem, physicsScene);
@@ -105,8 +121,21 @@ namespace knx{
                     
                     updateFunc();
                 }, 
-                preDrawFunc, 
-                postDrawFunc
+                [&](){
+                    if(postProcSurf.isEnabled){
+                        postProcSurf.link();
+                    }
+                    preDrawFunc();
+                },
+                [&](){
+                    if(postProcSurf.isEnabled){
+                        postProcSurf.finish();
+                        glClearColor(1, 1, 1, 1);
+                        glClear(GL_COLOR_BUFFER_BIT);
+                        postProcSurf.draw();
+                    }
+                    postDrawFunc();
+                }
             );
             window->swap();
             

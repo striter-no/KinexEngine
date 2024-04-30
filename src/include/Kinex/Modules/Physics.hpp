@@ -68,13 +68,7 @@ namespace knx{
                 cout<<"updated\n";
                 for(auto &pr2: rigidBodys){ 
                     if(pr.first == pr2.first) continue;
-                    cout<<"calciulating collision with "<<pr2.first<<"...\n";
                     irl::Collision collision = rb->processCollision(*pr2.second);
-                    cout<<"calculated!\n";
-
-                    cout<<"collision info: \n"<<
-                        "\t"<<to_stringb(collision.getCollidedStatus())<<endl<<
-                        "\t"<<collision.getVelocity().str()<<endl;
                 }
             }
         }

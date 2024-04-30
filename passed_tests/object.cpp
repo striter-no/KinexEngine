@@ -85,12 +85,12 @@ int main(){
     );
     
     auto mesh = knx::irl::Mesh(
-            knx::irl::meshes::cubemesh_txs_nrms,
-            true, true
+            "res/source/Thunderchild.obj",
+            false//true
     );
     mesh.setupBuffers(*core.getShaderPointer("objectShader"));
 
-    core.addTexture("currtexture", knx::irl::Texture("res/floor.png"));
+    core.addTexture("currtexture", knx::irl::Texture("res/textures/diffuse.png"));
     knx::Object cube(
         "Cube",
         knx::irl::Transform(
