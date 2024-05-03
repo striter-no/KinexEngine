@@ -49,36 +49,42 @@ namespace knx{
         void setVBO(const irl::VBO &val){ vbo = val; }
         void setVBO(irl::VBO *val){ vbo_ptr = val; }
 
-        void draw(){
-            shader->use();
+        void draw(bool useMainShader = true, irl::Shader *cameraOnlyShader = nullptr){
+            if(useMainShader) shader->use();
 
                 auto view = camera->getTransform().getViewMatrix();
                 auto model = transform.getModelMatrix();
                 auto proj = camera->getProj();
 
-                shader->setUniform("isTextureEnabled", textures.size()>0);
+                if(useMainShader){
+                    shader->setUniform("isTextureEnabled", textures.size()>0);
 
-                shader->setUniform("objColor", color);
-                shader->setUniform("viewPos", camera->getTransform().getPosition());
-                shader->setUniform("view", view);
-                shader->setUniform("model", model);
-                shader->setUniform("projection", proj);
-                if(meshPtr->getType() == VERTEX_NORMALS || meshPtr->getType() == VERTEX_NORMALS_TEXTURES){
-                    shader->setUniform("normals_mat", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
-                }
-
-                material->update(shader);
-
-                if(meshPtr->getType() == VERTEX_NORMALS_TEXTURES || meshPtr->getType() == VERTEX_TEXTURES){
-                    int index = 0;
-                    for(auto &pr: textures){
-                        shader->setUniform(pr.first, pr.second, index);
-                        index++;
+                    shader->setUniform("objColor", color);
+                    shader->setUniform("viewPos", camera->getTransform().getPosition());
+                    shader->setUniform("view", view);
+                    shader->setUniform("model", model);
+                    shader->setUniform("projection", proj);
+                    if(meshPtr->getType() == VERTEX_NORMALS || meshPtr->getType() == VERTEX_NORMALS_TEXTURES){
+                        shader->setUniform("normals_mat", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
                     }
+
+                    material->update(shader);
+
+                    if(meshPtr->getType() == VERTEX_NORMALS_TEXTURES || meshPtr->getType() == VERTEX_TEXTURES){
+                        int index = 0;
+                        for(auto &pr: textures){
+                            shader->setUniform(pr.first, pr.second, index);
+                            index++;
+                        }
+                    }
+                } else {
+                    cameraOnlyShader->setUniform("viewPos", camera->getTransform().getPosition());
+                    cameraOnlyShader->setUniform("view", view);
+                    cameraOnlyShader->setUniform("projection", proj);
                 }
 
                 meshPtr->draw();
-            shader->de_use();
+            if(useMainShader) shader->de_use();
             // pause();
         }
 

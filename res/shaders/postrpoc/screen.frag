@@ -12,7 +12,7 @@ void main()
     
     // col = mix(vec3((TexCoords+1)/2, 0), col, 0.5f);
 
-    col = 1 - col;
+    // col = 1 - col;
 
     FragColor = vec4(col, 1.0); //col, 
 }

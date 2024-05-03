@@ -16,6 +16,7 @@ namespace knx{
         LightningScene lightScene;
         
         Camera camera;
+        SkyBox skybox;
         FPController fpc; bool isFPCSetted = false;
         CameraController camcont; bool isCACSetted = false;
 
@@ -25,6 +26,10 @@ namespace knx{
         map<string, irl::Material> materials;
 
         RenderSurface postProcSurf;
+        irl::Material defaultMaterial = {1, {1.f}, 1.f};
+        irl::Mesh defaultCubeMesh = irl::Mesh(knx::irl::meshes::cubemesh_txs_nrms, true, true);
+        irl::Mesh defaultCubeMeshWithoutNormals = irl::Mesh(knx::irl::meshes::cubemesh, false, true);
+        irl::Mesh defaultCubeOnlyMesh = irl::Mesh(knx::irl::meshes::cubemesh_clear, false, false);
 
         public:
 
@@ -72,11 +77,13 @@ namespace knx{
         irl::Material getMaterial(string name){return materials[name];}
         irl::Shader &getShader(string name){return *shaders[name];}
         irl::Texture &getTexture(string name){return textures[name];}
+        irl::Material &getDefaultMaterial(){return defaultMaterial; }
 
         Object *getObjectPointer(string name){return gameObjects[name];}
         irl::Material *getMaterialPointer(string name){return &materials[name];}
         irl::Shader *getShaderPointer(string name){return shaders[name];}
         irl::Texture *getTexturePointer(string name){return &textures[name];}
+        irl::Material *getDefaultMaterialPointer(){return &defaultMaterial; }
 
         map<string, Object*> &getObjects(){return gameObjects;}
 
@@ -92,6 +99,10 @@ namespace knx{
             postProcSurf = RenderSurface({0}, window->getResolution(), shader, posAttr, textureAttr);
         }
 
+        void setupSkyBox(string pathToImages, string fileFormat = "jpg", string pathToSkyBoxShader = "res/shaders/st_shaders/StandartSkyBox"){
+            skybox = SkyBox(pathToImages, pathToSkyBoxShader, fileFormat);
+        }
+
         bool isRunning(){
             return window->isOpen();
         }
@@ -104,7 +115,9 @@ namespace knx{
             window->pollEvents();
             window->update(
                 [&](){
-                    
+                    if(skybox.isInited){
+                        skybox.draw(camera);
+                    }
                     for(auto &pr: gameObjects){
                         lightScene.update(*pr.second->getShaderPointer());
                         pr.second->draw();

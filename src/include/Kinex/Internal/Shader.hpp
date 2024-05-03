@@ -49,6 +49,15 @@ namespace knx{
                 return {program};
             }
             
+            bool setUniformTextureIndex(string name, GLuint tex, int indx){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glActiveTexture(GL_TEXTURE0 + indx);
+                glBindTexture(GL_TEXTURE_2D, tex);
+                glUniform1i(loc, indx);
+                return true;
+            }
+            
             public:
             GLuint prog;
             vector<GLuint> ids;
@@ -59,15 +68,60 @@ namespace knx{
             void newShader(string path, GLuint type){ids.push_back(LoadShader(path, type));}
             GLint getAttribLoc(string name){return glGetAttribLocation(prog, name.c_str());}
             GLint getUniformLoc(string name){return glGetUniformLocation(prog, name.c_str());}
-            void setUniform(string name, bool val){setUniform(name, val ? 1 : 0);}
-            void setUniform(string name, float val){glUniform1f(getUniformLoc(name), val);}
-            void setUniform(string name, int val){glUniform1i(getUniformLoc(name), val);}
-            void setUniform(string name, vec2f val){glUniform2f(getUniformLoc(name), val.x, val.y);}
-            void setUniform(string name, vec3f val){glUniform3f(getUniformLoc(name), val.x, val.y, val.z);}
-            void setUniform(string name, vec4f val){glUniform4f(getUniformLoc(name), val.x, val.y, val.z, val.w);}
-            void setUniform(string name, glm::mat4x4 val){glUniformMatrix4fv(getUniformLoc(name), 1, GL_FALSE, glm::value_ptr(val));}
-            void setUniform(string name, glm::mat3x3 val){glUniformMatrix3fv(getUniformLoc(name), 1, GL_FALSE, glm::value_ptr(val));}
-            void setUniform(string name, Texture val, int indx){setUniformTextureIndex(name, val.index, indx);}
+            bool setUniform(string name, bool val){return setUniform(name, val ? 1 : 0);}
+            bool setUniform(string name, float val){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glUniform1f(loc, val);
+                return true;
+            }
+            bool setUniform(string name, int val){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glUniform1i(loc, val);
+                return true;
+            }
+            bool setUniform(string name, vec2f val){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glUniform2f(loc, val.x, val.y);
+                return true;
+            }
+            bool setUniform(string name, vec3f val){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glUniform3f(loc, val.x, val.y, val.z);
+                return true;
+            }
+            bool setUniform(string name, vec4f val){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glUniform4f(loc, val.x, val.y, val.z, val.w);
+                return true;
+            }
+            bool setUniform(string name, glm::mat4x4 val){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(val));
+                return true;
+            }
+            bool setUniform(string name, glm::mat3x3 val){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(val));
+                return true;
+            }
+            bool setUniform(string name, Texture val, int indx){
+                return setUniformTextureIndex(name, val.index, indx);
+            }
+            bool setCubeMapUniform(string name, GLuint tex, int indx){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glActiveTexture(GL_TEXTURE0 + indx);
+                glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+                glUniform1i(loc, indx);
+                return true;
+            }
             void use(){glUseProgram(prog); status = true;}
             void de_use(){glUseProgram(0); status = false;}
 
@@ -106,12 +160,6 @@ namespace knx{
                 } else {
                     std::cout << "No active uniforms found." << std::endl;
                 }
-            }
-
-            void setUniformTextureIndex(string name, GLuint tex, int indx){
-                glActiveTexture(GL_TEXTURE0 + indx);
-                glBindTexture(GL_TEXTURE_2D, tex);
-                glUniform1i(getUniformLoc(name), indx);
             }
 
             void finish(){

@@ -2,19 +2,19 @@
 
 int main(){
     knx::Core core(
-        {1200, 900}, 
+        {2500, 1300}, 
         {0.0f, 0.0f, 0.0f, 1.0f}, 
         "Object test", 
         {0.05f, 0.7f},
         false
     );
     core.setupCamera({{0.f, 0.f, 0.f}}, 50, 0.25f, 0.1f, 5000.f);
-    // core.setupPostprocessingFromFile("res/shaders/postrpoc/screen");
+    core.setupPostprocessingFromFile("res/shaders/postrpoc/screen");
+    core.setupSkyBox("res/textures/skyboxes/default");
 
     core.getInputSystem().registrateAction("cursorModes", {knx::MOUSE_EVENT_, [&](const knx::irl::Event &event){ if((knx::MOUSE_EVENTS)event.getCode() == knx::MOUSE_PRESSED_){if(event.mouseButton == 0){core.getInputSystem().hideCursor(); core.getInputSystem().fixCursor(core.getWindow().getResolution() / 2.f); }}}});
     core.getInputSystem().registrateAction("esc", {knx::KEYBOARD_EVENT_, [&](const knx::irl::Event &event){if((knx::KEYBOARD_EVENTS)event.getCode() == knx::KEY_PRESSED_){ if(event.key == GLFW_KEY_ESCAPE){ core.getInputSystem().showCursor(); core.getInputSystem().freeCursor();}}}});
     core.setCAController(knx::CameraController( core.getCameraPointer(), core.getInputSystemPointer(), core.getTimePointer()));
-
     
     core.getLightScene().addPointLightSource("sun", knx::PointLightSource( knx::irl::PointLight( {0.2f}, {0.5f}, {1.0f}, 0.14f, 0.07f, {1.f} ), knx::irl::Transform(vec3f{0.f, 2.f, 0.f}) ) );
     core.getLightScene().addDirectionLightSource("sun2", knx::DirectLightSource( knx::irl::DirectionLight( {0.2f}, {1.f}, {0.5f}, {0, 0, 1} ), knx::irl::Transform({-1}, {0.f, 1.f, 0.f}) ) );
@@ -23,23 +23,23 @@ int main(){
     auto shader = knx::irl::Shader( "res/shaders/st_shaders/StandartShader" );
     core.addShader("objectShader", &shader);
 
-    auto mesh = knx::irl::Mesh( "res/models/Thunderchild.obj", false );
+    auto mesh = knx::irl::Mesh(knx::irl::meshes::cubemesh_txs_nrms, true, true);
     mesh.setupBuffers(*core.getShaderPointer("objectShader"));
 
     core.addMaterial("cubeMaterial", knx::irl::Material(32.0f, {1.0f, 0.5f, 0.31f}, {0.5f}));
-    core.addTexture("currtexture", knx::irl::Texture("res/textures/eve_textures/diffuse.png"));
+    core.addTexture("woodTexture", knx::irl::Texture("res/textures/single_textures/wood.png", true));
     knx::Object cube(
-        "Cube",
+        "cube-1",
         knx::irl::Transform(
             {0, 0, 0}, // Position
             {0, 0, 0}  // Rotation
-        ), {{"currtexture", core.getTexture("currtexture")}},
+        ), {{"currtexture", core.getTexture("woodTexture")}},
         core.getCameraPointer(),
         core.getShaderPointer("objectShader"),
         core.getMaterialPointer("cubeMaterial")
     );
     cube.meshPtr = &mesh;
-    core.addObject("Cosmo", &cube);
+    core.addObject("cube-1", &cube);
 
     while(core.isRunning()){ core.update(
             [&](){ cube.getTransform().rotate(vec3f{0, 0.01, 0}); },

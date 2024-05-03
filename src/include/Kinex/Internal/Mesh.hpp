@@ -160,7 +160,7 @@ namespace knx{
                 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
             };
 
-            vector<GLfloat> cubemesh_notextures = {
+            vector<GLfloat> cubemesh_clear = {
                 -0.5f, -0.5f, -0.5f,
                 0.5f, -0.5f, -0.5f,
                 0.5f,  0.5f, -0.5f,
@@ -364,8 +364,9 @@ namespace knx{
 
             void setData(const vector<float> &data){ this->data = data; }
            
-            void draw(){
+            void draw(function<void(void)> preDraw = [](){}){
                 vao.use(); vbo.use();
+                    preDraw();
                     glDrawArrays(GL_TRIANGLES, 0, size());
                 vbo.de_use(); vao.de_use(); 
             }

@@ -12,10 +12,10 @@ namespace knx{
 
         void update(){
             if(input->isWindowInFocus()){
-                camera->rotate(input->getCursorAxisX(true), input->getCursorAxisY(true));
+                camera->rotate(-input->getCursorAxisX(true), -input->getCursorAxisY(true));
 
                 camera->move({
-                    (int)input->getAxisX(),
+                    -(int)input->getAxisX(),
                     (int)input->getAxisY(),
                     (int)input->getAxisZ()
                 }, time->getDeltaTime());

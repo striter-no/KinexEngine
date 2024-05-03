@@ -35,7 +35,7 @@ namespace knx{
                 return v_front;
             }
             const vec3f &getUp(){
-                v_up = norm(cross(getRight(), getFront()));
+                v_up = norm(cross(getFront(), getRight()));
                 return v_up;
             }
             const vec3f &getRight(){

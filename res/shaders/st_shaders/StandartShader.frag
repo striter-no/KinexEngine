@@ -67,7 +67,7 @@ void main(){
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    vec3 result = {0};
+    vec3 result = vec3(0);
     if(isPointLightEnabled) result += CalcPointLight(pointLight, norm, FragPos, viewDir);    
     if(isDirectionLightEnabled) result += CalcDirLight(dirLight, norm, viewDir);
     if(isSpotLightEnabled)  result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
