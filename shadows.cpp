@@ -2,7 +2,7 @@
 
 int main(){
     knx::Core core(
-        {2500, 1300}, 
+        vec2f_ti({3440*0.3, 1440*0.5}), 
         {0.0f, 0.0f, 0.0f, 1.0f}, 
         "Object test", 
         {0.05f, 0.7f},
