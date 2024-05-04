@@ -61,6 +61,7 @@ uniform Material material;
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+vec3 fog(vec3 inp, vec3 fogColor, float fogDensity);
 
 void main(){
     
@@ -77,7 +78,14 @@ void main(){
         result = mix(texture(currtexture, txcd).rgb, result, .8f);
     }
 
-    FragColor = vec4(result * objColor * 1.2, 1);
+    if(fogEnabled)
+        FragColor = vec4(fog(result * objColor * 1.2, fogColor, fogDensity), 1);
+    else
+        FragColor = vec4(result * objColor * 1.2, 1);
+}
+
+vec3 fog(vec3 inp, vec3 fogColor, float fogDensity){
+    return mix(inp, fogColor, min(1.f, length(viewPos-fs_in.FragPos)*fogDensity));
 }
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
