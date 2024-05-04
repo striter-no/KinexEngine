@@ -20,12 +20,19 @@ namespace knx{
         FPController fpc; bool isFPCSetted = false;
         CameraController camcont; bool isCACSetted = false;
 
+        vec3f fogColor = {0.8f, 0.8f, 0.8f};
+        float fogDensity = 0.02f;
+        bool fogEnabled = false;
+
         map<string, Object*> gameObjects;
         map<string, irl::Shader*> shaders;
         map<string, irl::Texture> textures;
         map<string, irl::Material> materials;
 
         RenderSurface postProcSurf;
+        ScreenSurface preProcSurf;
+        ShadowSurface planeShadows;
+
         irl::Material defaultMaterial = {1, {1.f}, 1.f};
         irl::Mesh defaultCubeMesh = irl::Mesh(knx::irl::meshes::cubemesh_txs_nrms, true, true);
         irl::Mesh defaultCubeMeshWithoutNormals = irl::Mesh(knx::irl::meshes::cubemesh, false, true);
@@ -103,6 +110,16 @@ namespace knx{
             skybox = SkyBox(pathToImages, pathToSkyBoxShader, fileFormat);
         }
 
+        void setupFog(vec3f color, float density, bool setBackgoundColor = true){
+            fogColor = color;
+            fogDensity = density;
+            fogEnabled = true;
+
+            if(setBackgoundColor){
+                window->setClearColor(color);
+            }
+        }
+
         bool isRunning(){
             return window->isOpen();
         }
@@ -112,18 +129,37 @@ namespace knx{
             function<void()> updateFunc,
             function<void()> preDrawFunc,
             function<void()> postDrawFunc){
+            
+            auto render = [&](int){
+                for(auto &pr: gameObjects){
+                    // lightScene.update(*pr.second->getShaderPointer());
+                    pr.second->getShaderPointer()->use();
+                        pr.second->getShaderPointer()->setUniformTextureIndex("shadowMap", planeShadows.id, 1);
+                        pr.second->getShaderPointer()->setUniform("lightPos", vec3f{18.f, 11.f, 10.f});
+                        pr.second->getShaderPointer()->setUniform("fogColor", fogColor);
+                        pr.second->getShaderPointer()->setUniform("fogDensity", fogDensity);
+                        pr.second->getShaderPointer()->setUniform("fogEnabled", fogEnabled);
+                    pr.second->getShaderPointer()->de_use();
+                    pr.second->draw();
+                }
+                drawFunc();
+            };
+
+            auto preRender = [&](irl::Shader *shader){
+                for(auto &pr: gameObjects){
+                    pr.second->draw(false, shader, {{"model", true}});
+                }
+                drawFunc();
+            };
+            
             window->pollEvents();
             window->update(
                 [&](){
                     if(skybox.isInited){
                         skybox.draw(camera);
                     }
-                    for(auto &pr: gameObjects){
-                        lightScene.update(*pr.second->getShaderPointer());
-                        pr.second->draw();
-                    }
-                    drawFunc();
-                    
+
+                    planeShadows.drawScene({18.f, 11.f, 10.f}, {0}, preRender, render);
                 }, 
                 [&](){
                     if(isFPCSetted) fpc.update(inputSystem, physicsScene);
@@ -138,6 +174,8 @@ namespace knx{
                     if(postProcSurf.isEnabled){
                         postProcSurf.link();
                     }
+                    
+
                     preDrawFunc();
                 },
                 [&](){
@@ -173,6 +211,9 @@ namespace knx{
             inputSystem = Input(window);
             physicsScene = PhysicsScene(env, isPhysicsEnabled);
             time = Time(window);
+
+            planeShadows = ShadowSurface(res);
+            planeShadows.setupShader("res/shaders/shadows/shadow");
         }
 
         Core(){}

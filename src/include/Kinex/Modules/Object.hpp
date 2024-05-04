@@ -49,7 +49,7 @@ namespace knx{
         void setVBO(const irl::VBO &val){ vbo = val; }
         void setVBO(irl::VBO *val){ vbo_ptr = val; }
 
-        void draw(bool useMainShader = true, irl::Shader *cameraOnlyShader = nullptr){
+        void draw(bool useMainShader = true, irl::Shader *customShader = nullptr, map<string, bool> enabledUniforms = {}){
             if(useMainShader) shader->use();
 
                 auto view = camera->getTransform().getViewMatrix();
@@ -78,14 +78,22 @@ namespace knx{
                         }
                     }
                 } else {
-                    cameraOnlyShader->setUniform("viewPos", camera->getTransform().getPosition());
-                    cameraOnlyShader->setUniform("view", view);
-                    cameraOnlyShader->setUniform("projection", proj);
+                    for(auto &pr: enabledUniforms){
+                        if(pr.second){
+                            if(pr.first == "isTextureEnabled") shader->setUniform("isTextureEnabled", textures.size()>0);
+                            else if(pr.first == "objColor") shader->setUniform("objColor", color);
+                            else if(pr.first == "viewPos") shader->setUniform("viewPos", camera->getTransform().getPosition());
+                            else if(pr.first == "view") shader->setUniform("view", view);
+                            else if(pr.first == "model") shader->setUniform("model", model);
+                            else if(pr.first == "projection") shader->setUniform("projection", proj);
+                            else if(pr.first == "normals_mat" && (meshPtr->getType() == VERTEX_NORMALS || meshPtr->getType() == VERTEX_NORMALS_TEXTURES)) 
+                                shader->setUniform("normals_mat", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
+                        }
+                    }
                 }
 
                 meshPtr->draw();
             if(useMainShader) shader->de_use();
-            // pause();
         }
 
         void initRigidBody(

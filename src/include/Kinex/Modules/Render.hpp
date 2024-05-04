@@ -39,6 +39,34 @@ namespace knx{
             vao.de_use();
         }
 
+        ScreenSurface(
+            string path
+        ): shader(path) {
+            
+            vector<GLfloat> vertices = {
+                // Позиции        // Текстурные координаты
+                -1.0f, 1.0f,
+                -1.0f, -1.0f,
+                1.0f, -1.0f,
+
+                -1.0f, 1.0f,
+                1.0f, -1.0f,
+                1.0f, 1.0f
+            };
+
+            GLint ipos = shader.getAttribLoc("position");
+
+            vao.setup();
+            vbo.setup();
+            vao.use();
+                glEnableVertexAttribArray(ipos);
+
+                vbo.use(); vbo.buffer(vertices);
+                glVertexAttribPointer(ipos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
+                vbo.de_use();
+            vao.de_use();
+        }
+
         void draw(){
             shader.use();
                 vao.use(); vbo.use();
@@ -259,18 +287,6 @@ namespace knx{
         public:
         GLuint id;
 
-        /*
-        How to use:
-        surf.use();
-        surf.lookFrom(...);
-            glCullFace(GL_FRONT); // optional
-            renderScene();
-            glCullFace(GL_BACK); // optional
-        surf.finish();
-            updateScene();
-            renderScene();
-        surf.deuse();
-        */
         ShadowSurface(vec2i mapResolution): resolution(mapResolution) {
             glGenFramebuffers(1, &depthMapFBO);
             
@@ -280,23 +296,22 @@ namespace knx{
                         resolution.x, resolution.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
             glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, id, 0);
             glDrawBuffer(GL_NONE);
             glReadBuffer(GL_NONE);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+            if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+                std::cout << "Framebuffer not complete: " << fboStatus << std::endl;
+            }
         }
 
-        void setupShader(irl::Shader shader){
-            selfShader = shader;
-        }
-
-        void setupShader(string path){
-            selfShader = irl::Shader(path);
-        }
+        void setupShader(irl::Shader shader){ selfShader = shader; }
+        void setupShader(string path){ selfShader = irl::Shader(path); }
 
         void lookFrom(
             vec3f position, 
@@ -310,7 +325,6 @@ namespace knx{
 
             selfShader.use();
             selfShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
-            
         }
 
         void use(){
@@ -325,11 +339,22 @@ namespace knx{
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glViewport(0, 0, frameResolution.x, frameResolution.y);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glBindTexture(GL_TEXTURE_2D, id);
+            
         }
 
-        void deuse(){
-            glBindTexture(GL_TEXTURE_2D, 0);
+        void drawScene(
+            vec3f lightPosition,
+            vec3f lightLookPosition,
+            function<void(irl::Shader*)> preRenderFunc,
+            function<void(int)> renderFunc,
+            float near_plane = 1.f, 
+            float far_plane = 7.5f
+        ){
+            use();
+            lookFrom(lightPosition, lightLookPosition, near_plane, far_plane);
+                preRenderFunc(&selfShader);
+            finish(resolution);
+                renderFunc(id);
         }
 
         ShadowSurface(){}

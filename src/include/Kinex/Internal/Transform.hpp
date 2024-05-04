@@ -98,7 +98,9 @@ namespace knx{
             Transform &translate(const vec3f &val){ v_position += val; return *this;}
 
             Transform(vec3f v_position, vec3f v_rotation = 0.f, vec3f v_scale = 1.f, vec3f v_size = 0.f):
-                    v_position(v_position), v_rotation(v_rotation), v_scale(v_scale), v_size(v_size) {}
+                    v_position(v_position), v_rotation(v_rotation), v_scale(v_scale), v_size(v_size) {
+                
+            }
 
             Transform(){}
             ~Transform(){}

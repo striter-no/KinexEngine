@@ -23,9 +23,18 @@ namespace knx{
                     cout<<fileName<<" error:\n";
                     printf("%s", log);
 
-                    printv(processVector<string, string>(getFileLines(fileName), [&](int inx, string el) -> string{
-                        return to_string(inx) + " | " + el;
-                    }), false, '\n');
+                    auto vec = 
+                        processVector<string, string>(
+                            removeProcessVector<string>(getFileLines(fileName),
+                            [&](int inx, string el) -> bool{
+                                return (slice(strip(el), 0, 2) == "//") || strip(el).empty();
+                            }), 
+                            [&](int inx, string el) -> string{
+                                return to_string(inx) + " | " + el;
+                            }
+                        );
+
+                    printv(vec, false, '\n');
                 }
 
                 return shader;
@@ -49,14 +58,7 @@ namespace knx{
                 return {program};
             }
             
-            bool setUniformTextureIndex(string name, GLuint tex, int indx){
-                GLint loc = getUniformLoc(name);
-                if (loc == -1) return false;
-                glActiveTexture(GL_TEXTURE0 + indx);
-                glBindTexture(GL_TEXTURE_2D, tex);
-                glUniform1i(loc, indx);
-                return true;
-            }
+            
             
             public:
             GLuint prog;
@@ -119,6 +121,14 @@ namespace knx{
                 if (loc == -1) return false;
                 glActiveTexture(GL_TEXTURE0 + indx);
                 glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+                glUniform1i(loc, indx);
+                return true;
+            }
+            bool setUniformTextureIndex(string name, GLuint tex, int indx){
+                GLint loc = getUniformLoc(name);
+                if (loc == -1) return false;
+                glActiveTexture(GL_TEXTURE0 + indx);
+                glBindTexture(GL_TEXTURE_2D, tex);
                 glUniform1i(loc, indx);
                 return true;
             }
