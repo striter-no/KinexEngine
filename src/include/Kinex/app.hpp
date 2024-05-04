@@ -159,7 +159,7 @@ namespace knx{
                         skybox.draw(camera);
                     }
 
-                    planeShadows.drawScene({18.f, 11.f, 10.f}, {0}, preRender, render);
+                    planeShadows.drawScene({18.f, 11.f, 10.f}, {0}, vec2f_ti(window->getResolution()), preRender, render);
                 }, 
                 [&](){
                     if(isFPCSetted) fpc.update(inputSystem, physicsScene);

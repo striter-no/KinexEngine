@@ -41,47 +41,32 @@ namespace knx{
         void setupShader(irl::Shader shader){ selfShader = shader; }
         void setupShader(string path){ selfShader = irl::Shader(path); }
 
-        void lookFrom(
-            vec3f position, 
-            vec3f lookPosition, 
-            float near_plane = 1.f, 
-            float far_plane = 7.5f
-        ){
-            lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-            lightView = glm::lookAt(to_g3(position), to_g3(lookPosition), glm::vec3( 0.0f, 1.0f,  0.0f));
-            lightSpaceMatrix = lightProjection * lightView;
-
-            selfShader.use();
-            selfShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
-        }
-
-        void use(){
-            glViewport(0, 0, resolution.x, resolution.y);
-            glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-            glClear(GL_DEPTH_BUFFER_BIT);
-        }
-
-        void finish(vec2i frameResolution){
-            selfShader.de_use();
-
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glViewport(0, 0, frameResolution.x, frameResolution.y);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-        }
-
         void drawScene(
             vec3f lightPosition,
             vec3f lightLookPosition,
+            vec2i frameResolution,
             function<void(irl::Shader*)> preRenderFunc,
             function<void(int)> renderFunc,
             float near_plane = 1.f, 
             float far_plane = 7.5f
         ){
-            use();
-            lookFrom(lightPosition, lightLookPosition, near_plane, far_plane);
-                preRenderFunc(&selfShader);
-            finish(resolution);
+            lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+            lightView = glm::lookAt(to_g3(lightPosition), to_g3(lightLookPosition), glm::vec3( 0.0f, 1.0f,  0.0f));
+            lightSpaceMatrix = lightProjection * lightView;
+
+            glViewport(0, 0, resolution.x, resolution.y);
+                glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+                    glClear(GL_DEPTH_BUFFER_BIT);
+                    selfShader.use();
+                    
+                        selfShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+                        preRenderFunc(&selfShader);
+                    
+                    selfShader.de_use();
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            
+            glViewport(0, 0, frameResolution.x, frameResolution.y);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 renderFunc(id);
         }
 
