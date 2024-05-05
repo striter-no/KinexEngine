@@ -62,6 +62,11 @@ namespace knx{
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
 
+            Texture(GLuint index){
+                this->index = index;
+                type = STANDART_GL_TEXTURE;
+            }
+
             void loadFromFile(string path, bool freeThis = false){
                 type = DATA_TEXTURE;
                 img = stbi_load(path.c_str(), &width, &height, &cnt, 0);

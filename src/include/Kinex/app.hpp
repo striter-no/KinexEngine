@@ -134,8 +134,8 @@ namespace knx{
                 for(auto &pr: gameObjects){
                     // lightScene.update(*pr.second->getShaderPointer());
                     pr.second->getShaderPointer()->use();
-                        pr.second->getShaderPointer()->setUniformTextureIndex("shadowMap", planeShadows.id, 1);
-                        pr.second->getShaderPointer()->setUniform("lightPos", vec3f{18.f, 11.f, 10.f});
+                        pr.second->getShaderPointer()->setUniformTextureIndex("shadowMap", planeShadows.id, pr.second->getTextures().size());
+                        pr.second->getShaderPointer()->setUniform("lightPos", vec3f{0, 37, -7});
                         pr.second->getShaderPointer()->setUniform("fogColor", fogColor);
                         pr.second->getShaderPointer()->setUniform("fogDensity", fogDensity);
                         pr.second->getShaderPointer()->setUniform("fogEnabled", fogEnabled);
@@ -159,7 +159,15 @@ namespace knx{
                         skybox.draw(camera);
                     }
 
-                    planeShadows.drawScene({18.f, 11.f, 10.f}, {0}, vec2f_ti(window->getResolution()), preRender, render);
+                    planeShadows.drawScene(
+                        irl::Transform{
+                            {0, 37, -7},
+                            {0.f, -0.5f, 0.0}
+                        },
+                        vec2f_ti(window->getResolution()), 
+                        preRender, 
+                        render
+                    );
                 }, 
                 [&](){
                     if(isFPCSetted) fpc.update(inputSystem, physicsScene);
@@ -174,7 +182,6 @@ namespace knx{
                     if(postProcSurf.isEnabled){
                         postProcSurf.link();
                     }
-                    
 
                     preDrawFunc();
                 },
@@ -212,14 +219,14 @@ namespace knx{
             physicsScene = PhysicsScene(env, isPhysicsEnabled);
             time = Time(window);
 
-            planeShadows = ShadowSurface(res);
+            planeShadows = ShadowSurface(res); // {3000, 3000}
             planeShadows.setupShader("res/shaders/shadows/shadow");
+            planeShadows.setupDepthQuadShader("res/shaders/shadows/showdepth");
         }
 
         Core(){}
         ~Core(){
             window->terminate();
-            delete window;
         }
     };
 };

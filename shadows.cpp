@@ -2,7 +2,8 @@
 
 int main(){
     knx::Core core(
-        vec2f_ti({3440*0.3, 1440*0.5}), 
+        // vec2f_ti({3440*0.3, 1440*0.5}), 
+        vec2f_ti({3440, 1440}),
         {0.8f, 0.8f, 0.8f, 1.0f}, 
         "Object test", 
         {0.05f, 0.7f},
@@ -19,7 +20,7 @@ int main(){
     core.setCAController(knx::CameraController( core.getCameraPointer(), core.getInputSystemPointer(), core.getTimePointer()));
     
     core.getLightScene().addPointLightSource("sun", knx::PointLightSource( knx::irl::PointLight( {0.2f}, {0.5f}, {1.0f}, 0.14f, 0.07f, {1.f} ), knx::irl::Transform(vec3f{0.f, 2.f, 0.f}) ) );
-    core.getLightScene().addDirectionLightSource("sun2", knx::DirectLightSource( knx::irl::DirectionLight( {0.0f}, {1.f}, {0.3f}, {0.5} ), knx::irl::Transform({18.f, 11.f, 10.f}, {0.f, -.5f, 0.f}) ) );
+    core.getLightScene().addDirectionLightSource("sun2", knx::DirectLightSource( knx::irl::DirectionLight( {0.0f}, {1.f}, {0.3f}, {0.5} ), knx::irl::Transform({0, 37, -7}, {0.f, -.5f, 0.f}) ) );
     core.getLightScene().addSpotLightSource("sun3", knx::SpotLightSource( knx::irl::SpotLight( {0.1f}, {.8f}, {1.f}, cos(rad(12.5)), cos(rad(17.5)), 0.09, 0.032, {0, 1, 0} ), knx::irl::Transform({1}, {0.f, 1.f, 0.f}) ) );
     
     auto shader = knx::irl::Shader( "res/shaders/shadows/grobj" );
@@ -31,13 +32,13 @@ int main(){
     mesh.setupBuffers(*core.getShaderPointer("objectShader"));
 
     core.addMaterial("cubeMaterial", knx::irl::Material(32.0f, {0.f, 0.31f, 0.7f}, {0.5f}));
-    core.addTexture("woodTexture", knx::irl::Texture("res/textures/single_textures/mosaic.jpg", true));
+    core.addTexture("mosaic", knx::irl::Texture("res/textures/single_textures/mosaic.jpg", true));
     knx::Object cube(
         "cube-1",
         knx::irl::Transform(
             {0, 0, 0}, // Position
             {0, 0, 0}  // Rotation
-        ), {{"currtexture", core.getTexture("woodTexture")}},
+        ), {{"currtexture", core.getTexture("mosaic")}},
         core.getCameraPointer(),
         core.getShaderPointer("objectShader"),
         core.getMaterialPointer("cubeMaterial")
@@ -51,7 +52,7 @@ int main(){
             {10, -10, 10}, // Position
             {50, 0.5, 100},  // Rotation
             {15, 15, 15}
-        ), {{"currtexture", core.getTexture("woodTexture")}},
+        ), {{"currtexture", core.getTexture("mosaic")}},
         core.getCameraPointer(),
         core.getShaderPointer("objectShader"),
         core.getMaterialPointer("cubeMaterial")
@@ -59,20 +60,20 @@ int main(){
     cube3.meshPtr = &mesh;
     core.addObject("cube-3", &cube3);
 
-    knx::Object cube2(
-        "cube-2",
+    knx::Object floor(
+        "floor",
         knx::irl::Transform(
             {0, -5, 0}, // Position
             {0, 0, 0}, // Rotation
             {50, 1, 50}
-        ), {{"currtexture", core.getTexture("woodTexture")}},
+        ), {{"currtexture", core.getTexture("mosaic")}},
         core.getCameraPointer(),
         core.getShaderPointer("objectShader"),
         core.getMaterialPointer("cubeMaterial")
     );
 
-    cube2.meshPtr = &mesh;
-    core.addObject("cube-2", &cube2);
+    floor.meshPtr = &mesh;
+    core.addObject("floor", &floor);
 
     while(core.isRunning()){ core.update(
             [&](){ cube.getTransform().rotate(vec3f{0, 0.01, 0}); cube3.getTransform().rotate(vec3f{0.001, 0.001, 0.001});},
@@ -81,6 +82,7 @@ int main(){
                 core.getLightScene().getSpotLightSource("sun3").getTransform().setRotation(core.getCamera().getTransform().getRotation());
 
                 // core.getLightScene().getDirectionLightSource("sun2").getTransform().setRotation(core.getCamera().getTransform().getRotation());
+                // core.getLightScene().getDirectionLightSource("sun2").getTransform().setPosition(core.getCamera().getTransform().getPosition());
             },
             [&](){}, [&](){}
         );

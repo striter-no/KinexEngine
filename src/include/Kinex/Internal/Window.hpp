@@ -183,12 +183,12 @@ namespace knx{
                 }
                 begin = getChornoTimeNow();
                 preDrawFunc();
-                glEnable(GL_DEPTH_TEST);
-                    glClearColor(bg_clr.x, bg_clr.y, bg_clr.z, bg_clr.w);
-                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                // glEnable(GL_DEPTH_TEST);
+                    // glClearColor(bg_clr.x, bg_clr.y, bg_clr.z, bg_clr.w);
+                    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                     updateFunc();
                     drawFunc();
-                glDisable(GL_DEPTH_TEST);
+                // glDisable(GL_DEPTH_TEST);
                 postDrawFunc();
             }
 
