@@ -29,8 +29,8 @@ namespace knx{
                         resolution.x, resolution.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
             glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, id, 0);
@@ -49,16 +49,18 @@ namespace knx{
         void setupDepthQuadShader(irl::Shader shader){ depthQuadShader = shader; depthQuad.setupShader(shader); depthQuad.setTexture(id);}
 
         void drawScene(
-            irl::Transform transform,
+            vec3f lightPos,
+            vec3f lightLookAt,
             vec2i frameResolution,
             function<void(irl::Shader*)> preRenderFunc,
             function<void(int)> renderFunc,
+            bool renderQuad = false,
             float near_plane = 1.f, 
             float far_plane = 7.5f
         ){
             // Настройка
-            lightProjection = glm::ortho(-1000.0f, 1000.0f, -1000.0f, 1000.0f, near_plane, far_plane);
-            lightView = transform.getViewMatrix();
+            lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+            lightView = glm::lookAt(to_g3(lightPos), to_g3(lightLookAt), {0, 1, 0});
             lightSpaceMatrix = lightProjection * lightView;
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -75,11 +77,12 @@ namespace knx{
             selfShader.de_use();
             glViewport(0, 0, frameResolution.x, frameResolution.y);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            depthQuad.draw();
-                // renderFunc(id);
+            if(renderQuad) depthQuad.draw();
+            else renderFunc(id);
         }
 
         ShadowSurface(){}
         ~ShadowSurface(){}
     };
 };
+

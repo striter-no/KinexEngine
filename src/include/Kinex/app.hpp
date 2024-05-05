@@ -128,14 +128,16 @@ namespace knx{
             function<void()> drawFunc,
             function<void()> updateFunc,
             function<void()> preDrawFunc,
-            function<void()> postDrawFunc){
+            function<void()> postDrawFunc,
+            bool renderDepthQuad = false
+        ){
             
             auto render = [&](int){
                 for(auto &pr: gameObjects){
                     // lightScene.update(*pr.second->getShaderPointer());
                     pr.second->getShaderPointer()->use();
                         pr.second->getShaderPointer()->setUniformTextureIndex("shadowMap", planeShadows.id, pr.second->getTextures().size());
-                        pr.second->getShaderPointer()->setUniform("lightPos", vec3f{0, 37, -7});
+                        pr.second->getShaderPointer()->setUniform("lightPos", vec3f{0.0f, 10.0f, 0.0f});
                         pr.second->getShaderPointer()->setUniform("fogColor", fogColor);
                         pr.second->getShaderPointer()->setUniform("fogDensity", fogDensity);
                         pr.second->getShaderPointer()->setUniform("fogEnabled", fogEnabled);
@@ -160,13 +162,12 @@ namespace knx{
                     }
 
                     planeShadows.drawScene(
-                        irl::Transform{
-                            {0, 37, -7},
-                            {0.f, -0.5f, 0.0}
-                        },
+                        {0.0f, 10.f, 0.0f},
+                        {0.0f, 0.0f, 0.0f},
                         vec2f_ti(window->getResolution()), 
                         preRender, 
-                        render
+                        render,
+                        renderDepthQuad
                     );
                 }, 
                 [&](){
@@ -219,7 +220,7 @@ namespace knx{
             physicsScene = PhysicsScene(env, isPhysicsEnabled);
             time = Time(window);
 
-            planeShadows = ShadowSurface(res); // {3000, 3000}
+            planeShadows = ShadowSurface({1024, 1024}); // {3000, 3000}
             planeShadows.setupShader("res/shaders/shadows/shadow");
             planeShadows.setupDepthQuadShader("res/shaders/shadows/showdepth");
         }

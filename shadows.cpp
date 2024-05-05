@@ -1,9 +1,19 @@
 #include <Kinex/app.hpp>
 
 int main(){
+    auto strres = input("Enter resolution in format 'X Y', or enter 'auto' for auto detection: ");
+    int x, y;
+    if(strres == "auto"){
+        x = GetSystemMetrics(SM_CXSCREEN);
+        y = GetSystemMetrics(SM_CYSCREEN);
+    } else {
+        auto res = split(strres);
+        if(res.size() != 2) return 0;
+        x = stoi(res[0]);
+        y = stoi(res[1]);
+    }
     knx::Core core(
-        // vec2f_ti({3440*0.3, 1440*0.5}), 
-        vec2f_ti({3440, 1440}),
+        {x, y},
         {0.8f, 0.8f, 0.8f, 1.0f}, 
         "Object test", 
         {0.05f, 0.7f},
@@ -14,9 +24,11 @@ int main(){
     core.setupSkyBox("res/textures/skyboxes/default");
     core.setupFog({0.8f, 0.8f, 0.8f}, 0.02f);
 
+    bool showDepthQuad = false;
     core.getInputSystem().registrateAction("cursorModes", {knx::MOUSE_EVENT_, [&](const knx::irl::Event &event){ if((knx::MOUSE_EVENTS)event.getCode() == knx::MOUSE_PRESSED_){if(event.mouseButton == 0){core.getInputSystem().hideCursor(); core.getInputSystem().fixCursor(core.getWindow().getResolution() / 2.f); }}}});
     core.getInputSystem().registrateAction("esc", {knx::KEYBOARD_EVENT_, [&](const knx::irl::Event &event){if((knx::KEYBOARD_EVENTS)event.getCode() == knx::KEY_PRESSED_){ if(event.key == GLFW_KEY_ESCAPE){ core.getInputSystem().showCursor(); core.getInputSystem().freeCursor();}}}});
     core.getInputSystem().registrateAction("getCameraPos", {knx::KEYBOARD_EVENT_, [&](const knx::irl::Event &event){if((knx::KEYBOARD_EVENTS)event.getCode() == knx::KEY_PRESSED_){ if(event.key == GLFW_KEY_F1){ cout<<"[INFO] Camera position: "<<core.getCamera().getTransform().getPosition().str()<<endl;}}}});
+    core.getInputSystem().registrateAction("showDepth", {knx::KEYBOARD_EVENT_, [&](const knx::irl::Event &event){if((knx::KEYBOARD_EVENTS)event.getCode() == knx::KEY_PRESSED_){ if(event.key == GLFW_KEY_F2){showDepthQuad = !showDepthQuad; core.getCamera().getTransform().setPosition({0.0f, 10.0f, 0.0f});}}}});
     core.setCAController(knx::CameraController( core.getCameraPointer(), core.getInputSystemPointer(), core.getTimePointer()));
     
     core.getLightScene().addPointLightSource("sun", knx::PointLightSource( knx::irl::PointLight( {0.2f}, {0.5f}, {1.0f}, 0.14f, 0.07f, {1.f} ), knx::irl::Transform(vec3f{0.f, 2.f, 0.f}) ) );
@@ -84,7 +96,7 @@ int main(){
                 // core.getLightScene().getDirectionLightSource("sun2").getTransform().setRotation(core.getCamera().getTransform().getRotation());
                 // core.getLightScene().getDirectionLightSource("sun2").getTransform().setPosition(core.getCamera().getTransform().getPosition());
             },
-            [&](){}, [&](){}
+            [&](){}, [&](){}, showDepthQuad
         );
     }
 }
